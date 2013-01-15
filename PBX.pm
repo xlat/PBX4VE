@@ -5,6 +5,8 @@ use Win32::API;
 use File::Slurp qw(write_file);
 use Encode qw( decode );
 
+our $VERSION = 0.1;
+
 #convert a wchar_t* from utf-16le to what perl want.
 sub decode_LPCWSTR {
    my ($ptr) = @_;
