@@ -1,0 +1,61 @@
+=head1 DESCRIPTION
+
+I wrote this package to solve an issue with Visual Expert: it is unable to parse PBNI extensions because they doesn't content any code, as a result these extensions are not referenced in analyses at all.
+So this package will parse the PBX description and generate an empty wrapper for userobjects and global functions, then it is possible to import them in a separate PBL and just append this last one in the Visual Expert project (not in your Powerbuilder target !). The last step is to regenerate VE analyse and it will take the famous PBNI objects and functions in account.
+
+=head1 GETTING STARTED
+
+Install the project dependencies:
+
+ $ cpanp i Encode
+ $ cpanp i File::Slurp
+ $ cpanp i Win32::API
+
+One liner usages:
+
+ $ perl -MPBX=pbnihash.pbx
+PbniHash.pbx
+export uo_hash.sru
+
+Same with a filename pattern:
+
+ $ perl -MPBX=pbni*.pbx 
+
+In a script:
+
+ use PBX;
+ my $pbx = new PBX( 'pbnihash.pbx' );
+ $pbx->export;
+
+=head1 TODO
+
+Add to the C<export> method a path agument to specify output folder.
+Add a C<addtolibrary> method to import generated sources in a PBL (via Powerbuilder::ORCA or an orca script).
+
+=head1 LICENSE: Modified 3-clauses BSD
+
+Copyright (c) 2012-2013, Nicolas Georges, all rights reserved.
+https://github.com/xlat/pbx4ve
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer. 
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution. 
+* Neither the name of the organization nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY Nicolas Georges ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+NO EVENT SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
