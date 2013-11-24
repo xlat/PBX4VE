@@ -44,11 +44,16 @@ sub export{
 	#Export objects
 	while( $desc =~ /\bclass\s+(\w+)\s+from\s+(\w+)(.*?)\bend\s+class\b/gs ){ 
 		my ($class, $ancestor, $prototypes) = ($1, $2, $3);
+		if(($prototypes||'')=~/^\s*$/s){
+			print "\tskipped empty definition for $class inherited from $ancestor\n";
+			next
+		}
 		my (@events, @methods, @eventsdec, @methodsdec);
 		foreach my $proto( grep { !/^\s*$/ } split /\r?\n/, $prototypes ){
 			if(my @items = ( $proto=~/^\s*event\s*(?:(\w+)\s+(\w+)\(([^)]*)\)(\s+throws\s+.*)?|(\w+)\s+(\w+))\s*$/ ) ){
 				my ($type, $name, $id, $throws, $args) = ( $items[0]||'', $items[1]||$items[4], $items[5]||'', $items[3]||'', $items[2] );
 				if($type){
+					$throws ||= '';
 					push @events, "event type $type $name ( $args ) $throws";
 					push @eventsdec, "event type $type $name ( $args );\n$type $type\nreturn $type\nend event";
 				}
@@ -99,7 +104,7 @@ call super::destroy
 end on
 USEROBJECT
 		
-		print "export ${class}.sru\n";
+		print "\texport ${class}.sru (inherited from $ancestor)\n";
 		write_file( "${class}.sru", $source ) or warn "argh: $!\n";
 	}
 	
@@ -109,6 +114,7 @@ USEROBJECT
 		while( $descgf =~ /^\s*(subroutine|function)(?:\s+(\w+))?\s+(\w+)\(([^)]*)\)(?:\s+(throws .*))?\s*$/mg ){ 
 			my ($kind, $type, $name, $args, $throws) = ($1, $2, $3, $4, $5);
 			my $code = $type ? "$type $type\nreturn $type" : 'return';
+			$throws ||= '';
 			my $source = <<FUNCTION;
 \$PBExportHeader\$${name}.srf
 global type $name from function_object
@@ -121,7 +127,7 @@ end prototypes
 global $kind $type $name ($args) $throws;$code
 end $kind
 FUNCTION
-			print "export ${name}.srf\n";
+			print "\texport ${name}.srf\n";
 			write_file( "${name}.srf", $source ) or warn "argh: $!\n";
 		}
 	}
