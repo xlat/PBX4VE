@@ -62,10 +62,14 @@ sub export{
 					push @eventsdec, "event $name;\nreturn\nend event";
 				}
 			}
-			elsif($proto =~ /^\s*(subroutine|function)(?:\s+(\w+))?\s+(\w+)\(([^)]*)\)(?:\s+(throws .*))?\s*$/){
-				my ($kind, $type, $name, $args, $throws) = ($1, $2 || '', $3, $4, $5 || '');
-				push @methods, "$kind $type $name($args) $throws";
-				push @methodsdec, "$kind $type $name($args) $throws;\n$type $type\nreturn $type\nend $kind";
+			elsif($proto =~ /^\s*(public|private|protected|)\s*(subroutine|function)(?:\s+(\w+))?\s+(\w+)\(([^)]*)\)(?:\s+(throws .*))?\s*$/){
+				my ($scope, $kind, $type, $name, $args, $throws) = ($1||'public', $2, $3 || '', $4, $5, $6 || '');
+				#list to be completed (those function names are not importable at all!)
+				#be of a keyword conflict!
+				#But some other keywords are accepted in fact such as "set".
+				$name =~ s/(do|insert)/$1\_/;
+				push @methods, "$scope $kind $type $name($args) $throws";
+				push @methodsdec, "$scope $kind $type $name($args) $throws;\n$type $type\nreturn $type\nend $kind";
 			}
 		}
 		my $events = join $/, @events;
